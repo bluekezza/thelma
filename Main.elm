@@ -14,19 +14,52 @@ main : Program Never
 main =
   App.program
     { init = init
-    , view = view
+    , view = viewRoot
     , update = update
     , subscriptions = subscriptions
     }
-
-port setStorage : Json.Encode.Value -> Cmd msg
 
 port focus : String -> Cmd msg
 
 subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.none
 
--- JSON
+-- MODEL
+type Mode
+    = Home
+    | Edit
+
+type alias ChannelName = String
+          
+channels : List ChannelName
+channels = [ "Home", "News" ]
+                     
+type alias Article =
+    { channel : ChannelName }
+      
+type alias Model =
+    { mode : Mode
+    , article : Maybe Article
+    }
+
+emptyModel : Model
+emptyModel =
+  { mode = Home
+  , article = Nothing
+  }
+
+testModel : Model
+testModel =
+  { mode = Edit
+  , article = Just { channel = "News" }
+  }
+    
+init : ( Model, Cmd Msg )
+init = ( testModel, Cmd.none )
+
+{- JSON
+port setStorage : Json.Encode.Value -> Cmd msg
+
 -- ENCODE
 modelToValue : Model -> Json.Encode.Value
 modelToValue model =
@@ -49,23 +82,7 @@ modeDecoder mode =
         "Home" -> Json.Decode.succeed Home
         "Edit" -> Json.Decode.succeed Edit
         _      -> Json.Decode.fail (mode ++ " is not a recognized value for Mode")
-
--- MODEL
-type Mode
-    = Home
-    | Edit
-      
-type alias Model =
-    { mode : Mode
-    }
-
-emptyModel : Model
-emptyModel =
-  { mode = Home
-  }
-
-init : ( Model, Cmd Msg )
-init = ( emptyModel, Cmd.none )
+-}
 
 -- UPDATE
 type Msg
@@ -84,14 +101,39 @@ update msg model =
       { model | mode = Home } ! []
 
 -- VIEW
-view : Model -> Html Msg
-view model =
+viewChannel : ChannelName -> Html Msg
+viewChannel channel = text channel
+
+viewEdit : Maybe Article -> Html Msg
+viewEdit mArticle =
+    case mArticle of
+        Nothing ->
+            div [ class "edit" ]
+                []
+        Just article ->
+            div [ class "edit" ]
+                [ viewChannel article.channel ]
+
+viewRoot : Model -> Html Msg
+viewRoot model =
   div
     [ class ""
     , style []
     ]
-    [ text "thelma"
-    , text ":"
-    , text (toString model.mode)      
+    [ div
+      [ class "header"
+      ]
+      [ text "thelma"
+      , text (toString model.mode)
+      ]
+    , div
+      [ class "content"
+      ]
+      [ viewEdit model.article
+      ]
+    , div
+      [ class "footer"
+      ]
+      [ ]
     ]
-
+    

@@ -1,0 +1,8 @@
+{
+  "name": "thelma",
+  "version": "1.0.0",
+  "main": "electron-start.js",
+  "dependencies": {
+    "electron": "^1.3.5"
+  }
+}

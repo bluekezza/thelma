@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Thelma</title>
+  <script type="text/javascript" src="./thelma.js"></script>
+  <script>window.Thelma = require('./thelma.js');</script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+</body>
+
+<script type="text/javascript">
+const appName = "thelma";
+var thelma = Thelma.Main.fullscreen();
+thelma.ports.focus.subscribe(function(selector) {
+    setTimeout(function() {
+        var nodes = document.querySelectorAll(selector);
+        if (nodes.length === 1 && document.activeElement !== nodes[0]) {
+            nodes[0].focus();
+        }
+    }, 50);
+});
+</script>
+
+</html>

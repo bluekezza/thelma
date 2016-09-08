@@ -15,12 +15,15 @@ main =
     { init = init
     , view = view
     , update = update
-    , subscriptions = \_ -> Sub.none
+    , subscriptions = subscriptions
     }
 
 port setStorage : Model -> Cmd msg
 
 port focus : String -> Cmd msg
+
+subscriptions : Model -> Sub Msg
+subscriptions _ = Sub.none
 
 -- MODEL
 type alias Model =

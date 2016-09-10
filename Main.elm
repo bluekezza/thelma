@@ -10,6 +10,8 @@ import Json.Decode exposing ((:=), andThen)
 import Json.Encode
 import String
 import Data
+import Monocle.Optional exposing (Optional)
+import Monocle.Lens exposing (Lens)
 
 main : Program Never
 main =
@@ -47,6 +49,40 @@ type alias Model =
     , article : Maybe Article
     }
 
+-- Lens[start]
+modelArticle : Optional Model Article
+modelArticle =
+    let
+        getOption m = m.article
+        set a m = { m | article = Just a }
+    in
+        Optional getOption set
+
+articleChannel : Lens Article ChannelName
+articleChannel =
+    let
+        get a = a.channel
+        set c a = { a | channel = c }
+    in
+        Lens get set
+
+modelArticleChannel : Optional Model ChannelName
+modelArticleChannel =
+    modelArticle `Monocle.Optional.composeLens` articleChannel
+
+channelMode : Lens ChannelName ControlMode
+channelMode =
+    let
+        get c = c.mode
+        set m c = { c | mode = m }
+    in
+        Lens get set
+
+modelArticleChannelMode : Optional Model ControlMode
+modelArticleChannelMode =
+    modelArticleChannel `Monocle.Optional.composeLens` channelMode
+-- Lens[end]
+    
 emptyModel : Model
 emptyModel =
   { page = PageHome
@@ -73,21 +109,6 @@ type Msg
     | EditChannelName
     | SetChannelName Data.ChannelName
 
-updateArticleChannelMode : ControlMode -> Article -> Article
-updateArticleChannelMode channelMode article =
-    let
-        channel = article.channel
-    in
-        { article | channel = { channel | mode = channelMode }}
-
-setArticleChannelValue : Data.ChannelName -> Article -> Article
-setArticleChannelValue channelName article =
-    let
-        channel = article.channel
-    in
-        { article | channel = { channel | mode = ControlValue
-                                        , value = channelName }}
-      
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
@@ -99,14 +120,16 @@ update msg model =
         { model | page = PageHome } ! []
     EditChannelName ->
         let
-            mArticle = model.article
+            model' = model |> modelArticleChannelMode.set ControlEdit
         in
-            { model | article = Maybe.map (updateArticleChannelMode ControlEdit) mArticle } ! []
+            model' ! []
     SetChannelName channelName ->
         let
-            mArticle = model.article
+            model' = model |> modelArticleChannel.set { mode = ControlValue
+                                                      , value = channelName
+                                                      }
         in
-            { model | article = Maybe.map (setArticleChannelValue channelName) mArticle } ! []
+            model' ! []
 
 -- VIEW
 viewChannel : ChannelName -> Html Msg
@@ -116,7 +139,6 @@ viewChannel channel =
                             [ text channel.value ]
         ControlEdit -> div [] [ ol [] (List.map (\c -> li [ onClick (SetChannelName c)]
                                                           [ text c ]) Data.channels)]
-                              
 
 viewEdit : Maybe Article -> Html Msg
 viewEdit mArticle =

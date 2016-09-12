@@ -134,11 +134,28 @@ update msg model =
 -- VIEW
 viewChannel : ChannelName -> Html Msg
 viewChannel channel =
-    case channel.mode of
-        ControlValue -> div [ onClick EditChannelName ]
-                            [ text channel.value ]
-        ControlEdit -> div [] [ ol [] (List.map (\c -> li [ onClick (SetChannelName c)]
-                                                          [ text c ]) Data.channels)]
+    let
+        className = "channelName"
+    in
+        case channel.mode of
+            ControlValue -> div
+                            [ class className
+                            , onClick EditChannelName
+                            , style [("display", "inline-block")]
+                            ]
+                           [ text channel.value ]
+            ControlEdit -> div
+                           [ class className
+                           , style [("display", "inline-block")] ]
+                           [ ol
+                             []
+                             (List.map (\c -> li
+                                            [ onClick (SetChannelName c)
+                                            , class "option"
+                                            , style [("display", "online")]
+                                            ]
+                                            [ text c ])
+                                  Data.channels)]
 
 viewEdit : Maybe Article -> Html Msg
 viewEdit mArticle =
@@ -172,4 +189,3 @@ viewRoot model =
       ]
       [ ]
     ]
-    

@@ -5,12 +5,15 @@ import Json.Encode
 import String
 
 type alias ChannelName = String
+type alias Headline = String
           
 channels : List ChannelName
 channels = [ "Home", "News" ]
 
 type alias Article =
-    { channel : ChannelName }
+    { channel : ChannelName
+    , headline : Headline
+    }
 
 {- JSON
 port setStorage : Json.Encode.Value -> Cmd msg

@@ -1,7 +1,7 @@
 port module Main exposing (..)
 
 import Html exposing (..)
-import Html.App as App
+import Html.App as Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed as Keyed
@@ -11,13 +11,14 @@ import Json.Encode
 import String
 import Data
 import RichText
+import PlainText
 import Monocle.Optional exposing (Optional)
 import Monocle.Lens exposing (Lens)
 import Debug exposing (log)
 
 main : Program Never
 main =
-  App.program
+  Html.program
     { init = init
     , view = viewRoot
     , update = update
@@ -87,14 +88,18 @@ articleBody =
     in
         Lens get set
 
-modelArticleBody : Optional Model RichText.Model
-modelArticleBody =
-    modelArticle `Monocle.Optional.composeLens` articleBody
-            
 modelArticleChannel : Optional Model ChannelName
 modelArticleChannel =
     modelArticle `Monocle.Optional.composeLens` articleChannel
 
+modelArticleHeadline : Optional Model PlainText.Model
+modelArticleHeadline =
+    modelArticle `Monocle.Optional.composeLens` articleHeadline
+
+modelArticleBody : Optional Model RichText.Model
+modelArticleBody =
+    modelArticle `Monocle.Optional.composeLens` articleBody
+            
 channelMode : Lens ChannelName ControlMode
 channelMode =
     let
@@ -155,6 +160,7 @@ type Msg
     | EditChannelName
     | SetChannelName Data.ChannelName
     | BodyMsg RichText.Msg
+    | HeadlineMsg PlainText.Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -171,10 +177,8 @@ update msg model =
         (model |> modelArticleChannel.set { mode = ControlValue
                                           , value = channelName
                                           }) ! []
-    BodyMsg a ->
-        case modelArticleBody.getOption model of
-            Nothing   -> model ! []
-            Just body -> (model |> (modelArticleBody.set (RichText.update a body))) ! []
+    BodyMsg a -> Monocle.Optional.modify modelArticleBody (RichText.update a) model ! []
+    HeadlineMsg a -> Monocle.Optional.modify modelArticleHeadline (PlainText.update a) model ! []
 
 -- VIEW
 viewChannel : ChannelName -> Html Msg
@@ -202,15 +206,13 @@ viewChannel channel =
                                             [ text c ])
                                   Data.channels)]
 
-viewHeadline : Data.Headline -> Html Msg
+viewHeadline : String -> Html Msg
 viewHeadline headline =
-    div
-    [ class "headline"
-    , contenteditable True
-    , style [("display", "inline-block")]
-    ]
-    [ text headline ]
-
+    div [ class "headline"
+        , name "headline"
+        ]
+    [ PlainText.view headline |> Html.map HeadlineMsg ]
+        
 viewArticle : Maybe Article -> Html Msg
 viewArticle mArticle =
     case mArticle of
@@ -224,7 +226,7 @@ viewArticle mArticle =
                       ]
                       [ viewChannel article.channel ]
                 , viewHeadline article.headline
-                , RichText.view article.body |> App.map BodyMsg
+                , RichText.view article.body |> Html.map BodyMsg
                 ]
 
 viewRoot : Model -> Html Msg
@@ -252,23 +254,13 @@ viewRoot model =
       [ style [("display", "inline-block")]
       , width 200 ]
       [ button
-        [ onClick (BodyMsg RichText.InsertSection) ]
-        [ text "Insert Section" ]
-      , button
-        [ onClick (BodyMsg RichText.RemoveSection) ]
-        [ text "Remove Section" ]
-      , button
-        [ onClick (BodyMsg RichText.UpdateSection) ]
-        [ text "Update Section" ]
-      , br [] []
-      , button
         [ onClick (BodyMsg RichText.InsertParagraph) ]
         [ text "Insert Paragraph" ]
       , button
         [ onClick (BodyMsg RichText.RemoveParagraph) ]
         [ text "Remove Paragraph" ]
       , button
-        [ onClick (BodyMsg RichText.UpdateParagraph) ]
+        [ onClick (BodyMsg (RichText.UpdateParagraph "TODO")) ]
         [ text "Update Paragraph" ]            
       ]
     ]

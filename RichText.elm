@@ -2,15 +2,13 @@ port module RichText exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import List exposing (map, concat)
 
 type Msg
     = InsertParagraph
     | RemoveParagraph
-    | UpdateParagraph
-    | InsertSection
-    | RemoveSection
-    | UpdateSection
+    | UpdateParagraph String
 
 type Style
     = Normal
@@ -42,7 +40,9 @@ viewParagraph paragraph =
                   Large  -> h3
                   Italic -> i
     in 
-        tag [ name paragraph.name ]
+        tag [ name paragraph.name
+            , contenteditable True
+            , onInput UpdateParagraph ]
             [ text paragraph.text ]
     
 view : Model -> Html Msg
@@ -56,9 +56,6 @@ view { paragraphs } =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        InsertParagraph -> model
-        RemoveParagraph -> model
-        UpdateParagraph -> model
-        InsertSection   -> model
-        RemoveSection   -> model
-        UpdateSection   -> model
+        InsertParagraph   -> model
+        RemoveParagraph   -> model
+        UpdateParagraph _ -> model

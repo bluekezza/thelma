@@ -212,6 +212,9 @@ viewHeadline headline =
         , name "headline"
         ]
     [ PlainText.view headline |> Html.map HeadlineMsg ]
+
+viewBody : RichText.Model -> Html Msg
+viewBody body = RichText.view body |> Html.map BodyMsg
         
 viewArticle : Maybe Article -> Html Msg
 viewArticle mArticle =
@@ -226,7 +229,7 @@ viewArticle mArticle =
                       ]
                       [ viewChannel article.channel ]
                 , viewHeadline article.headline
-                , RichText.view article.body |> Html.map BodyMsg
+                , viewBody article.body
                 ]
 
 viewRoot : Model -> Html Msg
@@ -250,17 +253,4 @@ viewRoot model =
       [ class "footer"
       ]
       [ ]
-    , div
-      [ style [("display", "inline-block")]
-      , width 200 ]
-      [ button
-        [ onClick (BodyMsg RichText.InsertParagraph) ]
-        [ text "Insert Paragraph" ]
-      , button
-        [ onClick (BodyMsg RichText.RemoveParagraph) ]
-        [ text "Remove Paragraph" ]
-      , button
-        [ onClick (BodyMsg (RichText.UpdateParagraph "TODO")) ]
-        [ text "Update Paragraph" ]            
-      ]
     ]

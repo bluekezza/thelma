@@ -21,4 +21,8 @@ view : String -> Html Msg
 view model =
     div
       []
-      [ editable "h3" [style [("width", "100%")]] Update model ]
+      [ editable
+        "h3"
+          [style [("width", "100%")]]
+          Update model
+      ]

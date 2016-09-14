@@ -4,12 +4,12 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events
 import List exposing (map, concat)
-import Thelma.Html.Events exposing (onInput)
+import Thelma.Html exposing (editable)
 
 type Msg
     = InsertParagraph
     | RemoveParagraph
-    | UpdateParagraph String
+    | UpdateParagraph Int String
 
 type Style
     = Normal
@@ -33,24 +33,21 @@ type alias Model =
     { paragraphs : List Paragraph
     }
 
-viewParagraph : Paragraph -> Html Msg
-viewParagraph paragraph =
+viewParagraph : Int -> Paragraph -> Html Msg
+viewParagraph index paragraph =
     let
         tag = case paragraph.style of
-                  Normal -> p
-                  Large  -> h3
-                  Italic -> i
-    in 
-        tag [ name paragraph.name
-            , contenteditable True
-            , onInput UpdateParagraph ]
-            [ text paragraph.text ]
+                  Normal -> "p"
+                  Large  -> "h3"
+                  Italic -> "i"
+    in
+        editable tag [] (UpdateParagraph index) paragraph.text
     
 view : Model -> Html Msg
 view { paragraphs } =
     div [ class "section" ]
         (List.append
-          (List.map viewParagraph paragraphs)
+          (List.indexedMap viewParagraph paragraphs)
           [div []
                [text (toString paragraphs)]
           ])
@@ -58,6 +55,13 @@ view { paragraphs } =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        InsertParagraph   -> model
-        RemoveParagraph   -> model
-        UpdateParagraph _ -> model
+        InsertParagraph -> model
+        RemoveParagraph -> model
+        UpdateParagraph index a ->
+            let
+                editAtIndex i v = if i == index
+                                  then { v | text = a }
+                                  else v
+                paragraphs' = List.indexedMap editAtIndex model.paragraphs
+            in
+                { model | paragraphs = paragraphs' }

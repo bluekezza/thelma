@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events
 import Json.Decode as Json
 import Json.Encode
+import Thelma.Html exposing (editable)
 
 type alias Model = String
 
@@ -20,20 +21,4 @@ view : String -> Html Msg
 view model =
     div
       []
-      [ h3
-        [ contenteditable True
-        , onInput Update
-        , style [("width", "100%")]
-        , property "textContent" (Json.Encode.string model)
-        ]
-        [ ]
-      ]
-
-onInput : (String -> msg) -> Attribute msg
-onInput tagger =
-    Html.Events.on "input" (Json.map tagger targetTextContent)
-            
-targetTextContent : Json.Decoder String
-targetTextContent =
-    Json.at ["target", "textContent"] Json.string
-
+      [ editable "h3" [style [("width", "100%")]] Update model ]

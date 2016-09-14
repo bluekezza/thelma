@@ -2,8 +2,9 @@ port module RichText exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html.Events
 import List exposing (map, concat)
+import Thelma.Html.Events exposing (onInput)
 
 type Msg
     = InsertParagraph
@@ -47,11 +48,12 @@ viewParagraph paragraph =
     
 view : Model -> Html Msg
 view { paragraphs } =
-    let
-        foo = 1
-    in
-        div [ class "section" ]
-            (List.map viewParagraph paragraphs)
+    div [ class "section" ]
+        (List.append
+          (List.map viewParagraph paragraphs)
+          [div []
+               [text (toString paragraphs)]
+          ])
 
 update : Msg -> Model -> Model
 update msg model =

@@ -181,30 +181,40 @@ update msg model =
     HeadlineMsg a -> Monocle.Optional.modify modelArticleHeadline (PlainText.update a) model ! []
 
 -- VIEW
-viewChannel : ChannelName -> Html Msg
+viewChannel : ChannelName -> List (Html Msg)
 viewChannel channel =
     let
         className = "channelName"
     in
         case channel.mode of
-            ControlValue -> div
-                            [ class className
-                            , onClick EditChannelName
-                            , style [("display", "inline-block")]
+            ControlValue -> [ div
+                              [ class className
+                              , onClick EditChannelName
+                              , style [("display", "inline-block")]
+                              ]
+                              [ text channel.value ]
                             ]
-                           [ text channel.value ]
-            ControlEdit -> div
-                           [ class className
-                           , style [("display", "inline-block")] ]
-                           [ ol
-                             []
-                             (List.map (\c -> li
-                                            [ onClick (SetChannelName c)
-                                            , class "option"
-                                            , style [("display", "online")]
-                                            ]
-                                            [ text c ])
-                                  Data.channels)]
+            ControlEdit  -> [ div
+                              [ class className
+                              , onClick EditChannelName
+                              , style [("display", "inline-block")]
+                              ]
+                              [ text channel.value ]
+                            , div
+                              [ class className
+                              , style [("display", "block")
+                                      ,("position","absolute")] ]
+                              [ ol
+                                []
+                                (List.map (\c -> li
+                                               [ onClick (SetChannelName c)
+                                               , class "option"
+                                               , style [("display", "block")
+                                                       ]
+                                               ]
+                                               [ text c ])
+                                     Data.channels)]
+                            ]
 
 viewHeadline : String -> Html Msg
 viewHeadline headline =
@@ -227,9 +237,10 @@ viewArticle mArticle =
                 [ div [ class "meta"
                       , style [("background-color", "lightblue")]
                       ]
-                      [ viewChannel article.channel ]
+                  (viewChannel article.channel)
                 , viewHeadline article.headline
                 , viewBody article.body
+                , text (toString article)
                 ]
 
 viewRoot : Model -> Html Msg

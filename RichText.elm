@@ -46,11 +46,7 @@ viewParagraph index paragraph =
 view : Model -> Html Msg
 view { paragraphs } =
     div [ class "section" ]
-        (List.append
-          (List.indexedMap viewParagraph paragraphs)
-          [div []
-               [text (toString paragraphs)]
-          ])
+        (List.indexedMap viewParagraph paragraphs)
 
 update : Msg -> Model -> Model
 update msg model =

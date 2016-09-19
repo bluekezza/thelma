@@ -1,5 +1,7 @@
 html,
-body {
+body,
+p,
+h3{
     margin: 0;
     padding: 0;
 }
@@ -10,8 +12,26 @@ ol {
     padding: 0;
 }
 
+.meta {
+    background: #005689;
+    color: white;
+}
+
+.options {
+    border-style: solid;
+    border-color: orangered;
+    border-width: 2px;
+    border-radius: 2px;
+}
+
 .option {
-    background-color: yellow;
+    background: #EEEEEE;
+    color: #005689;
+}
+
+.option:hover {
+    background: #005689;
+    color: white;
 }
 
 .channelName {

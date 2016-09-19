@@ -7,22 +7,29 @@ import Json.Decode as Json
 import Json.Encode
 import Thelma.Html exposing (editable)
 
-type alias Model = String
+
+type alias Model =
+    String
+
 
 type Msg
     = Update String
 
+
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Update v -> v
+        Update v ->
+            v
+
 
 view : String -> Html Msg
 view model =
     div
-      []
-      [ editable
-        "h3"
-          [style [("width", "100%")]]
-          Update model
-      ]
+        []
+        [ editable
+            "h3"
+            [ style [ ( "width", "100%" ) ] ]
+            Update
+            model
+        ]

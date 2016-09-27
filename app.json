@@ -2,7 +2,7 @@
     "name": "Thelma",
     "repository": "https://github.com/bluekezza/thelma",
     "env": {
-        "ELM_COMPILE": "elm make Main.elm --output thelma.js"
+        "ELM_COMPILE": "elm make ./src/Main.elm --output thelma.js"
     },
     "buildpacks": [
         {

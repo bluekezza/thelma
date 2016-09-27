@@ -345,4 +345,7 @@ viewRoot model =
             [ class "footer"
             ]
             []
+        , button
+            [ onClick (BodyMsg (RichText.InsertTag (RichText.Image 1))) ]
+            [ text "img" ]
         ]

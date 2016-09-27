@@ -1,0 +1,19 @@
+{
+    "version": "1.0.0",
+    "summary": "Tests for Thelma",
+    "repository": "http://github.com/bluekezza/thelma.git",
+    "license": "BSD3",
+    "source-directories": [
+        ".",
+        "../src"
+    ],
+    "exposed-modules": [ ],
+    "native-modules": true,
+    "dependencies": {
+        "arturopala/elm-monocle": "1.2.1 <= v < 2.0.0",
+        "elm-lang/core": "4.0.0 <= v < 5.0.0",
+        "elm-lang/html": "1.0.0 <= v < 2.0.0",
+        "elm-community/elm-test": "1.0.0 <= v < 2.0.0"
+    },
+    "elm-version": "0.17.0 <= v < 0.18.0"
+}

@@ -1,4 +1,7 @@
 elm-stuff
-thelma.js
+*.js
 node_modules/
 TAGS
+tmp/
+
+!electron-start.js
